@@ -1,3 +1,14 @@
 {{page-title "FrontendPushUpdates"}}
 
+<dl>
+  <dt>tab URI</dt>
+  <dd>{{@model.tabUri}}</dd>
+</dl>
+
+<ul>
+  {{#each this.messages as |message|}}
+    <li>{{message}}</li>
+  {{/each}}
+</ul>
+
 {{outlet}}
