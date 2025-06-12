@@ -1,0 +1,9 @@
+<h1>Chat messages ({{@messages.length}})</h1>
+
+<ul>
+  {{#each @messages as |message|}}
+    <li><em>{{message.sender}}</em> :: {{message.content}}</li>
+  {{else}}
+    No messages to render
+  {{/each}}
+</ul>

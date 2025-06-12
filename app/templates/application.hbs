@@ -6,9 +6,19 @@
 </dl>
 
 <ul>
-  {{#each this.messages as |message|}}
+  {{#each this.pushMessages as |message|}}
     <li>{{message}}</li>
   {{/each}}
 </ul>
+
+<Messages @messages={{@model.chat}} />
+
+<form {{on "submit" (fn this.addMessage)}}>
+  <label>from: <Input @value={{this.message.sender}} {{on "change" (e/pipe (e/prevent-default) (e/str-val) (e/set-prop this.message "sender"))}} /></label>
+  <label>message: <Input @value={{this.message.content}} {{on "change" (e/pipe (e/prevent-default) (e/str-val) (e/set-prop this.message "message"))}} /></label>
+  <button type="submit">Add</button>
+</form>
+
+<button type="button" {{on "click" (fn this.fetchMessages)}}>Update</button>
 
 {{outlet}}

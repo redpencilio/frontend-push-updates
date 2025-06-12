@@ -5,6 +5,8 @@ export default class PushUpdatesService extends Service {
   @tracked tabUri;
   @tracked tabUriP;
 
+  handlers = {};
+
   // This is a current hack so we can easily render the messages somewhere
   @tracked messages = [];
 
@@ -12,6 +14,17 @@ export default class PushUpdatesService extends Service {
     super(...arguments);
 
     this.startQueryLoop();
+  }
+
+  addHandler( kind, functor ) {
+    this.handlers[kind] ||= [];
+    this.handlers[kind].push( functor );
+  }
+
+  removeHandler( kind, functor ) {
+    this.handlers[kind] =
+      (this.handlers[kind] || [])
+        .filter( (element) => element === functor );
   }
 
   async ensureTabUri() {
@@ -36,10 +49,24 @@ export default class PushUpdatesService extends Service {
     const tabUri = await this.ensureTabUri();
     while (true) {
       try {
-        const messages = (await (await fetch(`/polling/messages?tab=${encodeURIComponent(tabUri)}`)).json())
-            .data
+        const messages = (await (await fetch(`/polling/messages?tab=${encodeURIComponent(tabUri)}`)).json()).data;
+
+        // create a visible set of messages
+        const newVisibleMessages = messages
               .map( ({attributes}) => `${attributes.content} ${attributes.channel ? `BY ${attributes.channel}` : ""}` );
-        this.messages = [...messages,...this.messages];
+        this.messages = [...newVisibleMessages,...this.messages];
+
+        // call processors if they exist
+        messages
+          .forEach(
+            (message) => this
+                         .handlers[message.attributes.channel]
+                         ?.forEach(
+                           (handler) => { try {
+                             handler.call(message.attributes.content)
+                           } catch (e) {
+                             console.warn(`Handler did not respond to message`, { handler, message, e })
+                           } }));
       } catch (e) {
         console.warn(`Failed to poll messages ${e}.`);
       }
