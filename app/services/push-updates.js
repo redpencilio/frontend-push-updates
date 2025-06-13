@@ -47,6 +47,7 @@ export default class PushUpdatesService extends Service {
     while (true) {
       try {
         const body = (await (await fetch(`/polling/messages?tab=${encodeURIComponent(tabUri)}`)).json());
+        const messages = body.data;
 
         if( body.data ) {
           // call processors if they exist
