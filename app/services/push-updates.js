@@ -7,9 +7,6 @@ export default class PushUpdatesService extends Service {
 
   handlers = {};
 
-  // This is a current hack so we can easily render the messages somewhere
-  @tracked messages = [];
-
   constructor() {
     super(...arguments);
 
@@ -46,27 +43,31 @@ export default class PushUpdatesService extends Service {
   }
 
   async startQueryLoop() {
-    const tabUri = await this.ensureTabUri();
+    let tabUri = await this.ensureTabUri(); // will be updated if we need to refresh the tab uri
     while (true) {
       try {
-        const messages = (await (await fetch(`/polling/messages?tab=${encodeURIComponent(tabUri)}`)).json()).data;
+        const body = (await (await fetch(`/polling/messages?tab=${encodeURIComponent(tabUri)}`)).json());
 
-        // create a visible set of messages
-        const newVisibleMessages = messages
-              .map( ({attributes}) => `${attributes.content} ${attributes.channel ? `BY ${attributes.channel}` : ""}` );
-        this.messages = [...newVisibleMessages,...this.messages];
-
-        // call processors if they exist
-        messages
-          .forEach(
-            (message) => this
-                         .handlers[message.attributes.channel]
-                         ?.forEach(
-                           (handler) => { try {
-                             handler.call(message.attributes.content)
-                           } catch (e) {
-                             console.warn(`Handler did not respond to message`, { handler, message, e })
-                           } }));
+        if( body.data ) {
+          // call processors if they exist
+          messages
+            .forEach(
+              (message) =>
+                this
+                  .handlers[message.attributes.channel]
+                  ?.forEach(
+                    (handler) => { try {
+                      handler.call(message.attributes.content)
+                    } catch (e) {
+                      console.warn(`Handler did not respond to message`, { handler, message, e })
+                    } }));
+        } else {
+          // we are in the reror state and should fetch again
+          console.warn(`Lost tabId, asking for a new one ${tabUri}`);
+          // TODO: inform our registered consumers our tab has changed so they can setup their monitoring requests again
+          this.tabUriP = null;
+          tabUri = await this.ensureTabUri();
+        }
       } catch (e) {
         console.warn(`Failed to poll messages ${e}.`);
       }
