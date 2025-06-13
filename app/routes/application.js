@@ -20,7 +20,7 @@ export default class ApplicationRoute extends Route {
     // Ask cache-monitor to monitor /messages for us
     const queryParams = new URLSearchParams(
       { tab: this.pushUpdates.tabUri,
-        path: "/messages"
+        path: "/messages?sort=-sent-at"
       });
     await fetch(`/cache-monitor/monitor?${queryParams}`,
       {
@@ -32,6 +32,7 @@ export default class ApplicationRoute extends Route {
   setupController(controller) {
     super.setupController(...arguments);
     controller.resetMessage();
+    controller.fetchMessages();
   }
 
 }

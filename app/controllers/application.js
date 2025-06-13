@@ -7,6 +7,8 @@ export default class ApplicationController extends Controller {
   @service('store') store;
   @service pushUpdates;
   @tracked message;
+  @tracked messages;
+  @tracked sender = "";
 
   constructor() {
     super(...arguments);
@@ -18,8 +20,8 @@ export default class ApplicationController extends Controller {
   }
 
   @action
-  fetchMessages() {
-    this.store.findAll('message', { reload: true, backgroundReload: true });
+  async fetchMessages() {
+    this.messages = await this.store.query('message', { sort: "-sent-at" });
   }
 
   resetMessage() {
@@ -40,6 +42,8 @@ export default class ApplicationController extends Controller {
   @action
   addMessage(event) {
     event.preventDefault();
+    this.message.sentAt = new Date();
+    this.message.sender = this.sender;
     this.message.save();
     this.resetMessage();
   }

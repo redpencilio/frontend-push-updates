@@ -5,19 +5,13 @@
   <dd>{{@model.tabUri}}</dd>
 </dl>
 
-<ul>
-  {{#each this.pushMessages as |message|}}
-    <li>{{message}}</li>
-  {{/each}}
-</ul>
-
-<Messages @messages={{@model.chat}} />
-
 <form {{on "submit" (fn this.addMessage)}}>
-  <label>from: <Input @value={{this.message.sender}} {{on "change" (e/pipe (e/prevent-default) (e/str-val) (e/set-prop this.message "sender"))}} /></label>
+  <label>from: <Input @value={{this.sender}} {{on "change" (e/pipe (e/prevent-default) (e/str-val) (e/set-prop this "sender"))}} /></label>
   <label>message: <Input @value={{this.message.content}} {{on "change" (e/pipe (e/prevent-default) (e/str-val) (e/set-prop this.message "message"))}} /></label>
   <button type="submit">Add</button>
 </form>
+
+<Messages @messages={{this.messages}} />
 
 <button type="button" {{on "click" (fn this.fetchMessages)}}>Update</button>
 
