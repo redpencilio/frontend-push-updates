@@ -75,6 +75,21 @@ export default class PushUpdatesService extends Service {
       await timeout( 2000 );
     }
   }
+
+  // SUPPORT FOR SPECIFIC TYPES OF MONITOR
+  async monitorCache({ path, callback }) {
+    const tabUri = await this.ensureTabUri();
+    const queryParams = new URLSearchParams({ tab: tabUri, path });
+    await fetch(`/cache-monitor/monitor?${queryParams}`,
+      {
+        method: 'POST',
+        headers: { 'accept': 'application/vnd.api+json' }
+      });
+    this.addHandler(
+      "http://services.semantic.works/cache-monitor",
+      callback);
+    await callback();
+  }
 }
 
 function timeout(ms) {

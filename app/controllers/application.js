@@ -4,40 +4,26 @@ import { service } from '@ember/service';
 import Controller from '@ember/controller';
 
 export default class ApplicationController extends Controller {
-  @service('store') store;
+  @service store;
   @service pushUpdates;
+
+  @tracked sender = ""
   @tracked message;
   @tracked messages;
-  @tracked sender = "";
 
   constructor() {
     super(...arguments);
-    this.setupMonitor();
-  }
 
-  get pushMessages() {
-    return this.pushUpdates.messages;
-  }
-
-  @action
-  async fetchMessages() {
-    this.messages = await this.store.query('message', { sort: "-sent-at" });
+    this.pushUpdates.monitorCache({
+      path: "/messages?sort=-sent-at",
+      callback: async () =>
+        this.messages = await this.store.query('message', { sort: "-sent-at" })
+    });
   }
 
   resetMessage() {
     this.message = this.store.createRecord('message');
   }
-
-  setupMonitor() {
-    this.pushUpdates.addHandler("http://services.semantic.works/cache-monitor", () => {
-      console.log(`Got cache monitor message ${[...arguments]}`);
-      this.fetchMessages()
-    });
-  }
-
-  // removeMonitor() {
-  //   this.pushUpdates.removeHandler("http://services.semantic.works/cache-monitor", this.fetchMessages);
-  // }
 
   @action
   addMessage(event) {
