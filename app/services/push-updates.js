@@ -90,6 +90,37 @@ export default class PushUpdatesService extends Service {
       callback);
     await callback();
   }
+
+  async monitorResource({ uri, callback }) {
+    const tabUri = await this.ensureTabUri();
+    const queryParams = new URLSearchParams({ subject: uri });
+    await fetch(`/resource-monitor/monitor?${queryParams}`,
+      {
+        method: "POST",
+        headers: {
+          'accept': "application/vnd.api+json",
+          "MU-TAB-ID": tabUri
+        }
+      });
+    this.addHandler(
+      "http://services.semantic.works/resource-monitor",
+      callback);
+    await callback();
+  }
+
+  async unMonitorResource({ uri: uri, callback }) {
+    const tabUri = await this.ensureTabUri();
+    const queryParams = new URLSearchParams({ subject: uri });
+    await fetch(`/resource-monitor/monitor?${queryParams}`,
+      {
+        method: "DELETE",
+        headers: {
+          'accept': "application/vnd.api+json",
+          "MU-TAB-ID": tabUri
+        }
+      })
+    this.removeHandler("http://services.semantic.works/resource-monitor", callback);
+  }
 }
 
 function timeout(ms) {

@@ -1,0 +1,13 @@
+{{page-title "Chat"}}
+
+<h1>Chat like it's 1999!</h1>
+
+<form {{on "submit" this.addMessage}}>
+  <label>from: <Input @value={{this.sender}} {{on "change" (e/pipe (e/prevent-default) (e/str-val) (e/set-prop this "sender"))}} /></label>
+  <label>message: <Input @value={{this.message.content}} {{on "change" (e/pipe (e/prevent-default) (e/str-val) (e/set-prop this.message "message"))}} /></label>
+  <button type="submit">Add</button>
+</form>
+
+<Messages @messages={{this.messages}} />
+
+{{outlet}}
