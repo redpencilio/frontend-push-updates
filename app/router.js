@@ -9,4 +9,5 @@ export default class Router extends EmberRouter {
 Router.map(function () {
   this.route('chat');
   this.route('task');
+  this.route('tasks');
 });

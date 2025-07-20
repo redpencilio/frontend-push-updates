@@ -77,7 +77,7 @@ export default class PushUpdatesService extends Service {
   }
 
   // SUPPORT FOR SPECIFIC TYPES OF MONITOR
-  async monitorCache({ path, callback }) {
+  async monitorCache({ path, callback, initial=true }) {
     const tabUri = await this.ensureTabUri();
     const queryParams = new URLSearchParams({ tab: tabUri, path });
     await fetch(`/cache-monitor/monitor?${queryParams}`,
@@ -88,7 +88,8 @@ export default class PushUpdatesService extends Service {
     this.addHandler(
       "http://services.semantic.works/cache-monitor",
       callback);
-    await callback();
+    if( initial )
+      await callback();
   }
 
   async monitorResource({ uri, callback }) {
