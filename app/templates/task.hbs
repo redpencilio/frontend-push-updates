@@ -4,7 +4,7 @@
 
 You can edit task {{@model.uri}} here.  Changes will be reflected on other tabs when persisted.
 
-<form {{on "submit" (fn this.saveTask)}}>
+<form {{on "submit" this.saveTask}}>
   <label>title <Input @value={{this.model.title}} /></label>
   <label>status <Input @value={{this.model.status}} /></label>
   <button type="submit">Submit</button>

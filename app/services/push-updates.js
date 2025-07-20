@@ -21,7 +21,7 @@ export default class PushUpdatesService extends Service {
   removeHandler( kind, functor ) {
     this.handlers[kind] =
       (this.handlers[kind] || [])
-        .filter( (element) => element === functor );
+        .filter( (element) => element !== functor );
   }
 
   async ensureTabUri() {
@@ -105,7 +105,6 @@ export default class PushUpdatesService extends Service {
     this.addHandler(
       "http://services.semantic.works/resource-monitor",
       callback);
-    await callback();
   }
 
   async unMonitorResource({ uri: uri, callback }) {
@@ -120,6 +119,29 @@ export default class PushUpdatesService extends Service {
         }
       })
     this.removeHandler("http://services.semantic.works/resource-monitor", callback);
+  }
+
+  modelReloadCallbacks = {};
+
+  async monitorModel(model) {
+    const availableModel = await model;
+    if( availableModel.uri ) {
+      const callback = () => availableModel.reload();
+      this.modelReloadCallbacks[model] ||= [];
+      this.modelReloadCallbacks[model].push( callback );
+      await this.monitorResource( { uri: availableModel.uri, callback });
+    } else {
+      throw `Could not monitor model because no URI was found ${availableModel}`;
+    }
+  }
+
+  async unMonitorModel(model) {
+    const availableModel = await model;
+    if ( availableModel.uri && this.modelReloadCallbacks[model] ) {
+      const [callback, restCallbacks] = this.modelReloadCallbacks[model];
+      this.modelReloadCallbacks[model] = restCallbacks;
+      await this.unmonitorResource({ uri: availableModel.uri, callback });
+    }
   }
 }
 
