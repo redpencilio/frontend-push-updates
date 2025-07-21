@@ -1,0 +1,11 @@
+{{page-title "Show"}}
+
+| <LinkTo @route="tasks.edit" @model={{@model}}>Edit Task</LinkTo>
+
+<p>This page shows the task with uri {{@model.uri}}</p>
+<dl>
+  <dt>Title</dt><dd>{{@model.title}}</dd>
+  <dt>Status</dt><dd>{{@model.status}}</dd>
+</dl>
+
+{{outlet}}

@@ -10,7 +10,7 @@ export default class ResourceUriMonitoringRouteRoute extends Route {
 
   async setupController(_controller, model) {
     super.setupController(...arguments);
-    this.lastModel && await this.unMonitorModel(this.lastModel);
+    this.lastModel && await this.pushUpdates.unMonitorModel(this.lastModel);
     this.lastModel = model;
     await this.pushUpdates.monitorModel( model );
   }

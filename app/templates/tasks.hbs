@@ -1,9 +1,5 @@
 {{page-title "Tasks"}}
 
-<ul>
-  {{#each @model as |task|}}
-    <li>{{task.title}}</li>
-  {{/each}}
-</ul>
+| <LinkTo @route="tasks.index">All tasks</LinkTo> | <LinkTo @route="tasks.new">New Task</LinkTo>
 
 {{outlet}}

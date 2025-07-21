@@ -92,6 +92,20 @@ export default class PushUpdatesService extends Service {
       await callback();
   }
 
+  async unMonitorCache({ path, callback }) {
+    const tabUri = await this.ensureTabUri();
+    const queryParams = new URLSearchParams({ tab: tabUri, path });
+    await fetch(`/cache-monitor/monitor?${queryParams}`,
+      {
+        method: 'DELETE',
+        headers: { 'accept': 'application/vnd.api+json' }
+      });
+    this.removeHandler(
+      "http://services.semantic.works/cache-monitor",
+      callback
+    )
+  }
+
   async monitorResource({ uri, callback }) {
     const tabUri = await this.ensureTabUri();
     const queryParams = new URLSearchParams({ subject: uri });
@@ -141,7 +155,7 @@ export default class PushUpdatesService extends Service {
     if ( availableModel.uri && this.modelReloadCallbacks[model] ) {
       const [callback, restCallbacks] = this.modelReloadCallbacks[model];
       this.modelReloadCallbacks[model] = restCallbacks;
-      await this.unmonitorResource({ uri: availableModel.uri, callback });
+      await this.unMonitorResource({ uri: availableModel.uri, callback });
     }
   }
 }

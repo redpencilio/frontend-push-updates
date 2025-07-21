@@ -1,0 +1,17 @@
+{{page-title "Edit"}}
+
+| <LinkTo @route="tasks.show" @model={{@model}}>Show task</LinkTo>
+
+<h1>Edit a task status</h1>
+
+You can edit task {{@model.uri}} here.  Changes will be reflected on other tabs when persisted.
+
+<form {{on "submit" this.save}}>
+  <label>title <Input @value={{this.model.title}} /></label>
+  <label>status <Input @value={{this.model.status}} /></label>
+  <button type="submit">Submit</button>
+</form>
+
+<button {{on "click" this.delete}} type="button">Delete</button>
+
+{{outlet}}

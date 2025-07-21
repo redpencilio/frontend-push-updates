@@ -1,0 +1,9 @@
+{{page-title "Tasks"}}
+
+<ul>
+  {{#each @model as |task|}}
+    <li><LinkTo @route="tasks.show" @model={{task}}>{{task.title}}</LinkTo></li>
+  {{/each}}
+</ul>
+
+{{outlet}}

@@ -1,0 +1,9 @@
+{{page-title "New"}}
+
+<form {{on "submit" this.create}}>
+  <label>Title <Input @value={{this.taskTitle}} /></label>
+  <label>Status <Input @value={{this.taskStatus}} /></label>
+  <button type="submit">Create</button>
+</form>
+
+{{outlet}}
