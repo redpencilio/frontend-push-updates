@@ -9,17 +9,6 @@ export default class ChatController extends Controller {
 
   @tracked sender = ""
   @tracked message;
-  @tracked messages;
-
-  constructor() {
-    super(...arguments);
-
-    this.pushUpdates.monitorCache({
-      path: "/messages?sort=-sent-at",
-      callback: async () =>
-        this.messages = await this.store.query('message', { sort: "-sent-at" })
-    });
-  }
 
   resetMessage() {
     this.message = this.store.createRecord('message');
